@@ -30,7 +30,19 @@ EventChain leverages blockchain technology to create a secure, tamper-proof tick
 ```bash
 git clone https://github.com/yourusername/eventchain.git
 cd eventchain
+```
 
-## Install Dependencies
-```bash
-npm install
+## Current Status
+This project is in progress. The current phase involves:
+- Developing the API for ticket generation and purchase.
+- Integrating Hyperledger for ticket storage and validation.
+- Building the mobile apps for users and organizers.
+
+## To-Do
+- Complete API development for ticket purchasing.
+- Implement blockchain ticket storage.
+- Develop mobile app for QR code scanning.
+- Create admin dashboard for event organizers.
+
+## Contributions
+This project is a work-in-progress and not open to external contributions at this time.
