@@ -27,5 +27,6 @@ EventChain leverages blockchain technology to create a secure, tamper-proof tick
 - Hyperledger Fabric
 
 ### Clone the Repository
-```bash git clone https://github.com/yourusername/eventchain.git
+```bash
+git clone https://github.com/yourusername/eventchain.git
 cd eventchain
