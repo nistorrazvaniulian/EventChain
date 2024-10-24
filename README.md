@@ -38,13 +38,5 @@ This project is in progress. The current phase involves:
 - Developing the blockchain for ticket storage and validation.
 - Implementing the backend.
 
-
-
-## To-Do
-- Complete API development for ticket purchasing.
-- Implement blockchain ticket storage.
-- Develop mobile app for QR code scanning.
-- Create admin dashboard for event organizers.
-
 ## Contributions
 This project is a work-in-progress and not open to external contributions at this time.
