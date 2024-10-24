@@ -31,7 +31,6 @@ cd EventChain
 ```
 
 ## Current Status
-## Current Status
 This project is in progress. The current phase involves:
 
 - Creating the database in MongoDB.
