@@ -28,8 +28,8 @@ EventChain leverages blockchain technology to create a secure, tamper-proof tick
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/nistorrazvaniulian/eventchain.git
-cd eventchain
+git clone https://github.com/nistorrazvaniulian/EventChain.git
+cd EventChain
 ```
 
 ## Current Status
