@@ -14,12 +14,10 @@ EventChain leverages blockchain technology to create a secure, tamper-proof tick
 
 ## Technologies
 - **Frontend**: React (for the event organizer web interface)
-- **Backend**: Node.js, Express
+- **Backend**: Node.js
 - **Database**: MongoDB (for user and event data)
 - **Blockchain**: Hyperledger (for ticket management and security)
 - **Mobile**: React Native (for mobile apps)
-
-## Installation
 
 ### Prerequisites
 - Node.js
@@ -33,10 +31,14 @@ cd EventChain
 ```
 
 ## Current Status
+## Current Status
 This project is in progress. The current phase involves:
-- Developing the API for ticket generation and purchase.
-- Integrating Hyperledger for ticket storage and validation.
-- Building the mobile apps for users and organizers.
+
+- Creating the database in MongoDB.
+- Developing the blockchain for ticket storage and validation.
+- Implementing the backend.
+
+
 
 ## To-Do
 - Complete API development for ticket purchasing.
