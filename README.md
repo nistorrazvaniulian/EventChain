@@ -30,3 +30,7 @@ EventChain leverages blockchain technology to create a secure, tamper-proof tick
 ```bash
 git clone https://github.com/yourusername/eventchain.git
 cd eventchain
+
+## Install Dependencies
+```bash
+npm install
