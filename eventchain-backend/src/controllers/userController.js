@@ -1,29 +1,50 @@
+const { OAuth2Client } = require('google-auth-library');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const keys = require('../config/keys');
+const client = new OAuth2Client(keys.googleClientId);
 
-const createTestUser = async (req, res) => {
-    try {
-      const user = new User({
-        email: 'test@example.com'
-      });
-  
-      await user.save();
-      res.status(201).json({ message: 'User salvat cu succes' });
-    } catch (error) {
-      console.error('Eroare la salvarea userului:', error);
-      res.status(500).json({ error: 'Eroare internă' });
-    }
-  };
+const googleLogin = async (req, res) => {
+  const { id_token } = req.body;
 
-  const googleLogin = async(req, res) => {
-    try {
-        res.status(200).json({ message: "Google login test reusit" });
-      } catch (error) {
-        console.error('Eroare la login:', error);
-        res.status(500).json({ error: 'Eroare internă server' });
-      }
+  if (!id_token) {
+    return res.status(400).json({ error: 'ID token is missing' });
   }
 
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: id_token,
+      audience: keys.googleClientId,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub, email, name } = payload;
+
+    let user = await User.findOne({ googleId: sub });
+
+    if (!user) {
+      user = new User({ email, name, googleId: sub });
+      await user.save();
+    }
+
+    const token = jwt.sign({ id: user._id, email: user.email }, keys.jwtSecret, {
+      expiresIn: '7d',
+    });
+
+    return res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(401).json({ error: 'Invalid Google ID token' });
+  }
+};
+
   module.exports = { 
-    createTestUser,
     googleLogin
    };
