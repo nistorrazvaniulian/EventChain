@@ -1,6 +1,7 @@
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Ticket = require('../models/Ticket');
 const keys = require('../config/keys');
 const client = new OAuth2Client(keys.googleClientId);
 
@@ -27,9 +28,12 @@ const googleLogin = async (req, res) => {
       await user.save();
     }
 
-    const token = jwt.sign({ id: user._id, email: user.email }, keys.jwtSecret, {
-      expiresIn: '7d',
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: 'user' },
+      keys.jwtSecret,
+      { expiresIn: '1h' }
+    );
+
 
     return res.status(200).json({
       token,
@@ -45,6 +49,19 @@ const googleLogin = async (req, res) => {
   }
 };
 
+const getMyTickets = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const tickets = await Ticket.find({ userId });
+
+    res.status(200).json(tickets);
+  } catch (err) {
+    console.error('Eroare la extragerea biletelor userului:', err);
+    res.status(500).json({ error: 'Eroare la extragerea biletelor' });
+  }
+};
+
   module.exports = { 
-    googleLogin
+    googleLogin,
+    getMyTickets
    };

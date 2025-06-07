@@ -37,7 +37,7 @@ const createTestManager = async (req, res) => {
     const token = jwt.sign(
       { id: manager._id, role: 'manager' },
       keys.jwtSecret,
-      { expiresIn: '7d' }
+      { expiresIn: '1h' }
     );
 
     res.status(200).json({

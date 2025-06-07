@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Event = require('../models/Event');
+const Ticket = require('../models/Ticket');
 
 const createEvent = async (req, res) => {
   try {
@@ -35,8 +37,20 @@ const getAllEvents = async (req, res) => {
   }
 };
 
+const getEventTickets = async (req, res) => {
+  try {
+    const eventObjectId = new mongoose.Types.ObjectId(req.params.eventId);
+    const tickets = await Ticket.find({ eventId: eventObjectId });
+
+    res.status(200).json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: 'Eroare la extragerea biletelor' });
+  }
+};
+
 module.exports = {
   createEvent,
-  getAllEvents
+  getAllEvents,
+  getEventTickets
 };
 
