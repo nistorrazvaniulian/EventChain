@@ -2,16 +2,20 @@ const Ticket = require('../models/Ticket');
 const Event = require('../models/Event');
 const { connect } = require('../services/blockchainService');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const fs = require('fs');
+
+const generateQRCode = require('../utils/generateQRCode');
+const sendTicketEmail = require('../utils/sendTicketEmail');
 
 const buyTicket = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const userId = req.user.id;
+    const userEmail = req.user.email;
 
     const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
-    }
+    if (!event) return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
 
     if (event.ticketsSold >= event.totalTickets) {
       return res.status(400).json({ error: 'Nu mai sunt bilete disponibile' });
@@ -25,10 +29,9 @@ const buyTicket = async (req, res) => {
       userId,
       qrCode,
       createdAt
-    })._id.toString(); // extragem ID-ul înainte să salvăm
+    })._id.toString();
 
     const { contract, gateway } = await connect();
-
     await contract.submitTransaction(
       'createTicket',
       ticketId,
@@ -37,7 +40,6 @@ const buyTicket = async (req, res) => {
       event.date.toISOString(),
       createdAt.toISOString()
     );
-
     await gateway.disconnect();
 
     const ticket = new Ticket({
@@ -47,11 +49,15 @@ const buyTicket = async (req, res) => {
       qrCode,
       createdAt
     });
-
     await ticket.save();
 
     event.ticketsSold += 1;
     await event.save();
+
+    const qrPath = path.join(__dirname, '..', 'temp', `${ticketId}.png`);
+    await generateQRCode(ticketId, qrPath);
+    await sendTicketEmail(userEmail, event.title, qrPath, ticketId);
+    fs.unlinkSync(qrPath); // șterge codul QR temporar după trimitere
 
     res.status(201).json({
       message: 'Bilet cumpărat cu succes',
@@ -129,26 +135,10 @@ const invalidateTicket = async (req, res) => {
   }
 };
 
-// const invalidateTicketsForEventIfExpired = async (req, res) => {
-//   try {
-//     const { eventId, eventDate } = req.body;
-//     const { contract, gateway } = await connect();
-
-//     const result = await contract.submitTransaction('invalidateTicketsForEventIfExpired', eventId, eventDate);
-//     await gateway.disconnect();
-
-//     res.status(200).json({ message: result.toString() });
-//   } catch (error) {
-//     console.error('Eroare invalidateTicketsForEventIfExpired:', error.message);
-//     res.status(500).json({ error: 'Eroare la invalidarea biletelor pentru eveniment' });
-//   }
-// };
-
 module.exports = {
   buyTicket,
   getTicketFromBlockchain,
   validateTicket,
   checkOwnershipOnBlockchain,
-  invalidateTicket,
-  //invalidateTicketsForEventIfExpired
+  invalidateTicket
 };

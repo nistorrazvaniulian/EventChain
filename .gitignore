@@ -1,6 +1,9 @@
-node_modules/
-.env
+eventchain-backend/node_modules/
+eventchain-frontend/node_modules/
+eventchain-backend/.env
+eventchain-frontend/.env
 /wallet/
 *.pem
 *.key
 *.id
+eventchain-backend/src/temp/
