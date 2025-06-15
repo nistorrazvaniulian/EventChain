@@ -22,7 +22,10 @@ const eventSchema = new mongoose.Schema({
   ticketsSold: {
     type: Number,
     default: 0
-  }
+  },
+  isClosed: { 
+    type: Boolean, 
+    default: false }
 });
 
 module.exports = mongoose.model('Event', eventSchema);

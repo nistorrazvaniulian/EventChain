@@ -15,7 +15,7 @@ const createEvent = async (req, res) => {
       description,
       date,
       totalTickets,
-      organizerId: req.user.id
+      organizerId: req.manager.id
     });
 
     await event.save();
