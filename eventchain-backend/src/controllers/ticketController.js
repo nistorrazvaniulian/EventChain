@@ -7,6 +7,7 @@ const fs = require('fs');
 
 const generateQRCode = require('../utils/generateQRCode');
 const sendTicketEmail = require('../utils/sendTicketEmail');
+const { getTicket } = require('../services/blockchainService');
 
 const buyTicket = async (req, res) => {
   try {
@@ -120,25 +121,63 @@ const checkOwnershipOnBlockchain = async (req, res) => {
   }
 };
 
-const invalidateTicket = async (req, res) => {
+// const invalidateTicket = async (req, res) => {
+//   try {
+//     const { ticketId } = req.params;
+//     const { contract, gateway } = await connect();
+
+//     const result = await contract.submitTransaction('invalidateTicket', ticketId);
+//     await gateway.disconnect();
+
+//     res.status(200).json({ message: 'Bilet invalidat', ticket: JSON.parse(result.toString()) });
+//   } catch (error) {
+//     console.error('Eroare invalidateTicket:', error.message);
+//     res.status(500).json({ error: 'Eroare la invalidarea biletului' });
+//   }
+// };
+
+const invalidateTicketByManager = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const { contract, gateway } = await connect();
 
+    const ticketOnChain = await getTicket(ticketId);
+    if (!ticketOnChain) {
+      return res.status(404).json({ message: 'Bilet inexistent' });
+    }
+
+    const isValid = ticketOnChain.isValid === true || ticketOnChain.isValid === 'true';
+    if (!isValid) {
+      return res.status(400).json({ message: 'Biletul este deja invalidat' });
+    }
+
+    const { contract, gateway } = await connect();
     const result = await contract.submitTransaction('invalidateTicket', ticketId);
     await gateway.disconnect();
 
-    res.status(200).json({ message: 'Bilet invalidat', ticket: JSON.parse(result.toString()) });
+    await Ticket.findByIdAndUpdate(ticketId, { isValid: false });
+
+    return res.status(200).json({
+      message: 'Bilet invalidat cu succes',
+      ticket: JSON.parse(result.toString())
+    });
   } catch (error) {
-    console.error('Eroare invalidateTicket:', error.message);
-    res.status(500).json({ error: 'Eroare la invalidarea biletului' });
+    const message = error.message || '';
+
+    if (message.includes('already invalid')) {
+      return res.status(400).json({ message: 'Biletul este deja invalidat' });
+    }
+
+    console.error('Eroare invalidateTicketByManager:', message);
+    return res.status(500).json({ message: 'Eroare la invalidarea biletului' });
   }
 };
+
 
 module.exports = {
   buyTicket,
   getTicketFromBlockchain,
   validateTicket,
   checkOwnershipOnBlockchain,
-  invalidateTicket
+  //invalidateTicket,
+  invalidateTicketByManager
 };

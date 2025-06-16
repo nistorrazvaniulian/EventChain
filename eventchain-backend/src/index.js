@@ -7,6 +7,7 @@ const managerRoutes = require('./routes/managerRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const managerTicketRoutes = require('./routes/managerTicketRoutes');
+const scanRoutes = require('./routes/scanRoutes');
 
 const invalidateExpiredTicketsJob = require('./jobs/invalidateExpiredTickets');
 
@@ -22,6 +23,7 @@ app.use('/api/managers', managerRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/manager-tickets', managerTicketRoutes);
+app.use('/api/scan', scanRoutes);
 
 app.get('/', (req, res) => {
     res.send('EventChain-backend is running');

@@ -23,4 +23,22 @@ async function connect() {
   return { gateway, contract };
 }
 
-module.exports = { connect };
+const getTicket = async (ticketId) => {
+  const { contract, gateway } = await connect();
+  try {
+    const result = await contract.evaluateTransaction('getTicket', ticketId);
+    await gateway.disconnect();
+
+    if (!result || result.length === 0) {
+      return null;
+    }
+
+    return JSON.parse(result.toString());
+  } catch (error) {
+    await gateway.disconnect();
+    console.error('Eroare în getTicket din blockchainService:', error.message);
+    throw error;
+  }
+};
+
+module.exports = { connect, getTicket };
