@@ -21,6 +21,10 @@ const googleLogin = async (req, res) => {
     const payload = ticket.getPayload();
     const { sub, email, name } = payload;
 
+    if (!sub || !email || !name) {
+      return res.status(401).json({ error: 'Invalid Google ID token' });
+    }
+
     let user = await User.findOne({ googleId: sub });
 
     if (!user) {
@@ -34,7 +38,6 @@ const googleLogin = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-
     return res.status(200).json({
       token,
       user: {
@@ -45,16 +48,24 @@ const googleLogin = async (req, res) => {
     });
   } catch (error) {
     console.error('Google login error:', error);
-    res.status(401).json({ error: 'Invalid Google ID token' });
+    const isGoogleError = error.message?.includes('Wrong number of segments') || error.message?.includes('Invalid token');
+    return res.status(isGoogleError ? 401 : 500).json({
+      error: isGoogleError ? 'Invalid Google ID token' : 'Eroare internă server'
+    });
   }
 };
 
 const getMyTickets = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Acces neautorizat' });
+    }
+
     const tickets = await Ticket.find({ userId });
 
-    res.status(200).json(tickets);
+    res.status(200).json(Array.isArray(tickets) ? tickets : []);
   } catch (err) {
     console.error('Eroare la extragerea biletelor userului:', err);
     res.status(500).json({ error: 'Eroare la extragerea biletelor' });

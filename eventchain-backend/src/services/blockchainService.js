@@ -5,26 +5,35 @@ const fs = require('fs');
 const ccpPath = path.resolve(__dirname, '../gateway/connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
+const identityName = 'admin';
+const channelName = 'eventchain';
+const chaincodeName = 'ticketContract';
+
 async function connect() {
   const wallet = await Wallets.newFileSystemWallet(path.join(__dirname, '../../wallet'));
-  const identity = await wallet.get('admin');
-  if (!identity) throw new Error('Admin identity not found in wallet');
+  const identity = await wallet.get(identityName);
+  if (!identity) throw new Error(`Identity '${identityName}' not found in wallet`);
 
   const gateway = new Gateway();
   await gateway.connect(ccp, {
     wallet,
-    identity: 'admin',
+    identity: identityName,
     discovery: { enabled: true, asLocalhost: true }
   });
 
-  const network = await gateway.getNetwork('eventchain');
-  const contract = network.getContract('ticketcontract');
+  const network = await gateway.getNetwork(channelName);
+  const contract = network.getContract(chaincodeName);
 
   return { gateway, contract };
 }
 
 const getTicket = async (ticketId) => {
+  if (!ticketId || typeof ticketId !== 'string' || ticketId.trim() === '') {
+    throw new Error('ID-ul biletului este invalid');
+  }
+
   const { contract, gateway } = await connect();
+
   try {
     const result = await contract.evaluateTransaction('getTicket', ticketId);
     await gateway.disconnect();
@@ -33,7 +42,13 @@ const getTicket = async (ticketId) => {
       return null;
     }
 
-    return JSON.parse(result.toString());
+    try {
+      return JSON.parse(result.toString());
+    } catch (parseErr) {
+      console.error('Eroare la parsarea biletului:', parseErr.message);
+      throw new Error('Biletul nu a putut fi interpretat');
+    }
+
   } catch (error) {
     await gateway.disconnect();
     console.error('Eroare în getTicket din blockchainService:', error.message);

@@ -12,11 +12,17 @@ const { getTicket } = require('../services/blockchainService');
 const buyTicket = async (req, res) => {
   try {
     const eventId = req.params.eventId;
-    const userId = req.user.id;
-    const userEmail = req.user.email;
+    const userId = req.user?.id;
+    const userEmail = req.user?.email;
+
+    if (!userId || !userEmail) {
+      return res.status(401).json({ error: 'Utilizator neautentificat' });
+    }
 
     const event = await Event.findById(eventId);
-    if (!event) return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
+    if (!event) {
+      return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
+    }
 
     if (event.ticketsSold >= event.totalTickets) {
       return res.status(400).json({ error: 'Nu mai sunt bilete disponibile' });
@@ -24,24 +30,27 @@ const buyTicket = async (req, res) => {
 
     const qrCode = uuidv4();
     const createdAt = new Date();
+    const ticketId = new Ticket({ eventId, userId, qrCode, createdAt })._id.toString();
 
-    const ticketId = new Ticket({
-      eventId,
-      userId,
-      qrCode,
-      createdAt
-    })._id.toString();
+    let contract, gateway;
+    try {
+      const blockchain = await connect();
+      contract = blockchain.contract;
+      gateway = blockchain.gateway;
 
-    const { contract, gateway } = await connect();
-    await contract.submitTransaction(
-      'createTicket',
-      ticketId,
-      eventId.toString(),
-      userId.toString(),
-      event.date.toISOString(),
-      createdAt.toISOString()
-    );
-    await gateway.disconnect();
+      await contract.submitTransaction(
+        'createTicket',
+        ticketId,
+        eventId.toString(),
+        userId.toString(),
+        event.date.toISOString(),
+        createdAt.toISOString()
+      );
+      await gateway.disconnect();
+    } catch (err) {
+      if (gateway) await gateway.disconnect();
+      return res.status(500).json({ error: 'Eroare la salvarea biletului în blockchain' });
+    }
 
     const ticket = new Ticket({
       _id: ticketId,
@@ -57,8 +66,12 @@ const buyTicket = async (req, res) => {
 
     const qrPath = path.join(__dirname, '..', 'temp', `${ticketId}.png`);
     await generateQRCode(ticketId, qrPath);
-    await sendTicketEmail(userEmail, event.title, qrPath, ticketId);
-    fs.unlinkSync(qrPath); // șterge codul QR temporar după trimitere
+
+    try {
+      await sendTicketEmail(userEmail, event.title, qrPath, ticketId);
+    } catch (e) {}
+
+    if (fs.existsSync(qrPath)) fs.unlinkSync(qrPath);
 
     res.status(201).json({
       message: 'Bilet cumpărat cu succes',
@@ -78,29 +91,44 @@ const buyTicket = async (req, res) => {
 const getTicketFromBlockchain = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const { contract, gateway } = await connect();
+    if (!ticketId) {
+      return res.status(400).json({ error: 'Lipsă ticketId în parametri' });
+    }
 
+    const { contract, gateway } = await connect();
     const result = await contract.evaluateTransaction('getTicket', ticketId);
     await gateway.disconnect();
 
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: 'Biletul nu a fost găsit în blockchain' });
+    }
+
     res.status(200).json(JSON.parse(result.toString()));
   } catch (error) {
-    console.error('Eroare getTicket:', error.message);
+    console.error('Eroare getTicketFromBlockchain:', error.message);
     res.status(500).json({ error: 'Eroare la extragerea biletului din blockchain' });
   }
 };
 
+
 const validateTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const { contract, gateway } = await connect();
+    if (!ticketId) {
+      return res.status(400).json({ error: 'Lipsă ticketId în parametri' });
+    }
 
+    const { contract, gateway } = await connect();
     const result = await contract.evaluateTransaction('isTicketValid', ticketId);
     await gateway.disconnect();
 
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Biletul nu a fost găsit în blockchain' });
+    }
+
     res.status(200).json({ isValid: result.toString() === 'true' });
   } catch (error) {
-    console.error('Eroare isTicketValid:', error.message);
+    console.error('Eroare validateTicket:', error.message);
     res.status(500).json({ error: 'Eroare la validarea biletului' });
   }
 };
@@ -108,44 +136,47 @@ const validateTicket = async (req, res) => {
 const checkOwnershipOnBlockchain = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const userId = req.user.id;
-    const { contract, gateway } = await connect();
+    const userId = req.user?.id;
 
+    if (!ticketId) {
+      return res.status(400).json({ error: 'Lipsă ticketId în parametri' });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Utilizator neautentificat' });
+    }
+
+    const { contract, gateway } = await connect();
     const result = await contract.evaluateTransaction('isTicketOwnedByUser', ticketId, userId);
     await gateway.disconnect();
 
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: 'Biletul nu a fost găsit în blockchain' });
+    }
+
     res.status(200).json({ isOwner: result.toString() === 'true' });
   } catch (error) {
-    console.error('Eroare isTicketOwnedByUser:', error.message);
+    console.error('Eroare checkOwnershipOnBlockchain:', error.message);
     res.status(500).json({ error: 'Eroare la verificarea deținerii biletului' });
   }
 };
 
-// const invalidateTicket = async (req, res) => {
-//   try {
-//     const { ticketId } = req.params;
-//     const { contract, gateway } = await connect();
-
-//     const result = await contract.submitTransaction('invalidateTicket', ticketId);
-//     await gateway.disconnect();
-
-//     res.status(200).json({ message: 'Bilet invalidat', ticket: JSON.parse(result.toString()) });
-//   } catch (error) {
-//     console.error('Eroare invalidateTicket:', error.message);
-//     res.status(500).json({ error: 'Eroare la invalidarea biletului' });
-//   }
-// };
 
 const invalidateTicketByManager = async (req, res) => {
   try {
     const { ticketId } = req.params;
 
-    const ticketOnChain = await getTicket(ticketId);
-    if (!ticketOnChain) {
-      return res.status(404).json({ message: 'Bilet inexistent' });
+    let ticketOnChain;
+    try {
+      ticketOnChain = await getTicket(ticketId);
+    } catch (err) {
+      if (err.message.includes('does not exist')) {
+        return res.status(404).json({ message: 'Bilet inexistent' });
+      }
+      throw err;
     }
 
-    const isValid = ticketOnChain.isValid === true || ticketOnChain.isValid === 'true';
+    const isValid = ticketOnChain.status === 'valid';
     if (!isValid) {
       return res.status(400).json({ message: 'Biletul este deja invalidat' });
     }
@@ -173,11 +204,12 @@ const invalidateTicketByManager = async (req, res) => {
 };
 
 
+
+
 module.exports = {
   buyTicket,
   getTicketFromBlockchain,
   validateTicket,
   checkOwnershipOnBlockchain,
-  //invalidateTicket,
   invalidateTicketByManager
 };

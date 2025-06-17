@@ -25,7 +25,15 @@ const eventSchema = new mongoose.Schema({
   },
   isClosed: { 
     type: Boolean, 
-    default: false }
+    default: false },
+  location: { 
+    type: String, 
+    required: true 
+  },
+  city: { 
+    type: String, 
+    required: true 
+  }
 });
 
 module.exports = mongoose.model('Event', eventSchema);

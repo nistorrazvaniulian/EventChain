@@ -4,21 +4,26 @@ const keys = require('../config/keys');
 const bcrypt = require('bcrypt');
 
 const createTestManager = async (req, res) => {
-    try {
-        const hashedPassword = await bcrypt.hash('654321', 10);
-    
-        const manager = new Manager({
-          username: 'testManager',
-          password_hash: hashedPassword
-        });
-    
-        await manager.save();
-        res.status(201).json({ message: 'Manager salvat cu succes' });
-      } catch (error) {
-        console.error('Eroare la salvarea managerului:', error);
-        res.status(500).json({ error: 'Eroare internă' });
-      }
-  };
+  try {
+    const existing = await Manager.findOne({ username: 'testManager' });
+    if (existing) {
+      return res.status(400).json({ error: 'Managerul de test există deja' });
+    }
+
+    const hashedPassword = await bcrypt.hash('654321', 10);
+
+    const manager = new Manager({
+      username: 'testManager',
+      password_hash: hashedPassword
+    });
+
+    await manager.save();
+    res.status(201).json({ message: 'Manager salvat cu succes', managerId: manager._id });
+  } catch (error) {
+    console.error('Eroare la salvarea managerului:', error);
+    res.status(500).json({ error: 'Eroare internă' });
+  }
+};
 
   const loginManager = async (req, res) => {
   try {

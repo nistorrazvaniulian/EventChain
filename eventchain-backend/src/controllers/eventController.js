@@ -4,10 +4,10 @@ const Ticket = require('../models/Ticket');
 
 const createEvent = async (req, res) => {
   try {
-    const { title, description, date, totalTickets } = req.body;
+    const { title, description, date, totalTickets, location, city } = req.body;
 
-    if (!title || !date || !totalTickets) {
-      return res.status(400).json({ error: 'Title, date și totalTickets sunt obligatorii' });
+    if (!title || !date || !totalTickets || !location || !city) {
+      return res.status(400).json({ error: 'Title, date, totalTickets, location și city sunt obligatorii' });
     }
 
     const event = new Event({
@@ -15,7 +15,9 @@ const createEvent = async (req, res) => {
       description,
       date,
       totalTickets,
-      organizerId: req.manager.id
+      organizerId: req.manager.id,
+      location,
+      city
     });
 
     await event.save();
@@ -39,7 +41,13 @@ const getAllEvents = async (req, res) => {
 
 const getEventTickets = async (req, res) => {
   try {
-    const eventObjectId = new mongoose.Types.ObjectId(req.params.eventId);
+    const { eventId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ error: 'ID eveniment invalid' });
+    }
+
+    const eventObjectId = new mongoose.Types.ObjectId(eventId);
     const tickets = await Ticket.find({ eventId: eventObjectId });
 
     res.status(200).json(tickets);
@@ -51,10 +59,13 @@ const getEventTickets = async (req, res) => {
 const updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { title, description, date, totalTickets } = req.body;
+    const { title, description, date, totalTickets, location, city } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ error: 'ID eveniment invalid' });
+    }
 
     const event = await Event.findById(eventId);
-
     if (!event) {
       return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
     }
@@ -68,14 +79,16 @@ const updateEvent = async (req, res) => {
       return res.status(400).json({ error: 'Nu poți edita un eveniment care a trecut de 3h de la start' });
     }
 
-    if (totalTickets < event.ticketsSold) {
+    if (totalTickets !== undefined && totalTickets < event.ticketsSold) {
       return res.status(400).json({ error: `Nu poți seta totalTickets mai mic decât biletele vândute (${event.ticketsSold})` });
     }
 
-    event.title = title || event.title;
-    event.description = description || event.description;
-    event.date = date || event.date;
-    event.totalTickets = totalTickets || event.totalTickets;
+    if (title !== undefined) event.title = title;
+    if (description !== undefined) event.description = description;
+    if (date !== undefined) event.date = date;
+    if (totalTickets !== undefined) event.totalTickets = totalTickets;
+    if (location !== undefined) event.location = location;
+    if (city !== undefined) event.city = city;
 
     await event.save();
     res.status(200).json({ message: 'Eveniment actualizat cu succes', event });
@@ -88,6 +101,10 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ error: 'ID eveniment invalid' });
+    }
 
     const event = await Event.findById(eventId);
     if (!event) {
@@ -110,7 +127,6 @@ const deleteEvent = async (req, res) => {
     res.status(500).json({ error: 'Eroare internă server' });
   }
 };
-
 
 module.exports = {
   createEvent,
