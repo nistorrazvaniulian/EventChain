@@ -33,7 +33,23 @@ const eventSchema = new mongoose.Schema({
   city: { 
     type: String, 
     required: true 
-  }
+  },
+  category: {
+  type: String,
+  enum: [
+    'Concert',
+    'Teatru',
+    'Stand-up Comedy',
+    'Sport',
+    'Festival',
+    'Conferință',
+    'Workshop',
+    'Târg & Expo',
+    'Petrecere',
+    'Altele'
+  ],
+  required: true
+ }
 });
 
 module.exports = mongoose.model('Event', eventSchema);

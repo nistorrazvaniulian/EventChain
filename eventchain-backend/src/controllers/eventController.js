@@ -4,10 +4,10 @@ const Ticket = require('../models/Ticket');
 
 const createEvent = async (req, res) => {
   try {
-    const { title, description, date, totalTickets, location, city } = req.body;
+    const { title, description, date, totalTickets, location, city, category } = req.body;
 
-    if (!title || !date || !totalTickets || !location || !city) {
-      return res.status(400).json({ error: 'Title, date, totalTickets, location și city sunt obligatorii' });
+    if (!title || !date || !totalTickets || !location || !city || !category) {
+      return res.status(400).json({ error: 'Title, date, totalTickets, location, city și category sunt obligatorii' });
     }
 
     const event = new Event({
@@ -17,7 +17,8 @@ const createEvent = async (req, res) => {
       totalTickets,
       organizerId: req.manager.id,
       location,
-      city
+      city,
+      category
     });
 
     await event.save();
@@ -59,7 +60,7 @@ const getEventTickets = async (req, res) => {
 const updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { title, description, date, totalTickets, location, city } = req.body;
+    const { title, description, date, totalTickets, location, city, category } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
       return res.status(400).json({ error: 'ID eveniment invalid' });
@@ -89,6 +90,7 @@ const updateEvent = async (req, res) => {
     if (totalTickets !== undefined) event.totalTickets = totalTickets;
     if (location !== undefined) event.location = location;
     if (city !== undefined) event.city = city;
+    if (category !== undefined) event.category = category;
 
     await event.save();
     res.status(200).json({ message: 'Eveniment actualizat cu succes', event });
