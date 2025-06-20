@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../assets/Logo.png';
+import categories from '../api/mockCategories';
+import cities from '../api/mockCities';
 
 const Header = ({ onMenuToggle }) => {
   const navigate = useNavigate();
@@ -14,30 +16,6 @@ const Header = ({ onMenuToggle }) => {
       navigate('/');
     }
   };
-
-  const categories = [
-    'Concerte',
-    'Teatru',
-    'Festivaluri',
-    'Sport',
-    'Stand-up',
-    'Copii',
-    'Operă',
-    'Expoziții',
-  ];
-
-  const cities = [
-    'București',
-    'Cluj-Napoca',
-    'Iași',
-    'Brașov',
-    'Timișoara',
-    'Constanța',
-    'Sibiu',
-    'Oradea',
-    'Craiova',
-    'Arad',
-  ];
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow px-4 py-3 sm:px-6 md:px-8">
@@ -139,8 +117,12 @@ const Header = ({ onMenuToggle }) => {
         {/* Biletele mele + Logout */}
         <div className="flex items-center gap-6">
           <button
-            className="text-blue-600 font-medium text-sm hover:underline"
-            onClick={() => alert('Navigare la biletele tale')}
+            className={`font-medium text-sm hover:underline ${
+              location.pathname === '/my-tickets'
+                ? 'text-blue-800 font-semibold'
+                : 'text-blue-600'
+            }`}
+            onClick={() => navigate('/my-tickets')}
           >
             Biletele mele
           </button>

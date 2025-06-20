@@ -1,29 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/Logo.png';
+import categories from '../api/mockCategories';
+import cities from '../api/mockCities';
 
 const NavbarMenu = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('Categorii');
-
-  const categories = [
-    'Concerte',
-    'Teatru',
-    'Festivaluri',
-    'Turnee naționale',
-    'Sport',
-    'Spectacole pentru copii',
-    'Stand-up',
-    'Operă',
-    'Evenimente corporate',
-    'Cultură urbană',
-  ];
-
-  const cities = [
-    'București',
-    'Cluj-Napoca',
-    'Iași',
-    'Brașov',
-    'Timișoara',
-  ];
+  const navigate = useNavigate();
 
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-hidden">
@@ -44,7 +27,13 @@ const NavbarMenu = ({ onClose }) => {
         </div>
 
         {/* Biletele mele cu săgeată */}
-        <button className="flex justify-between items-center text-blue-600 text-base font-medium px-2 py-4 border-b hover:bg-gray-100">
+        <button
+          onClick={() => {
+            navigate('/my-tickets');
+            onClose();
+          }}
+          className="flex justify-between items-center text-blue-600 text-base font-medium px-2 py-4 border-b hover:bg-gray-100"
+        >
           Biletele mele
           <i className="fa-solid fa-angle-right text-gray-400" />
         </button>
