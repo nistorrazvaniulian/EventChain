@@ -33,11 +33,7 @@ Starring Alex Super Beats, a powerhouse behind the decks, Alex Super Beats will 
 Join us every month when the full moon rises, and let’s create a night of pure magic together.
 
 This isn’t just a party; it’s a cosmic experience.
-
-An automatic discount of 15% will be awarded if you finalise your payment with a Raiffeisen Premium card and 10% with a Raiffeisen Yellow card. No code is necessary.
-This event is 18+ or accompanied by a parent or legal guardian.
-Invites available until MIDNIGHT.
-`;
+  `;
 
   if (!event) {
     return <div className="text-center mt-10 text-red-600">Evenimentul nu a fost găsit.</div>;
@@ -46,66 +42,111 @@ Invites available until MIDNIGHT.
   const [lei, bani] = event.price.split('.');
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 pt-[80px]">
       <Header onMenuToggle={() => setMenuOpen(true)} />
       {menuOpen && <NavbarMenu onClose={() => setMenuOpen(false)} />}
 
-      <img src={event.image} alt="Event" className="w-full h-64 object-cover" />
-
-      <div className="bg-white p-4 shadow-md rounded-b-lg">
+      {/* DESIGN MOBIL */}
+      <div className="md:hidden mt-4 px-4">
+        <img src={event.image} alt="Event" className="w-full h-64 object-cover rounded-lg mb-4" />
         <h1 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h1>
-
         <div className="flex items-center text-gray-600 mb-1">
           <FaMapMarkerAlt className="mr-2 text-blue-600" />
           <span>{event.location}, {event.city}</span>
         </div>
-
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center text-gray-600 mb-4">
           <FaClock className="mr-2 text-blue-600" />
           <span>{event.date}, ora {event.time}</span>
         </div>
-      </div>
 
-      {/* Card bilet */}
-      <div className="bg-white mt-4 p-4 shadow-md rounded-lg mx-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">Acces eveniment</h2>
-
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-gray-700 text-base font-medium">
-            {lei}
-            <sup className="text-xs align-super">{bani}</sup> lei
+        <div className="bg-white p-4 shadow-md rounded-lg mb-4">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">Acces eveniment</h2>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-gray-700 text-base font-medium">
+              {lei}<sup className="text-xs align-super">{bani}</sup> lei
+            </p>
+            <button
+              className={`${
+                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white font-semibold px-6 py-2 rounded-full text-sm`}
+              onClick={handleBuyClick}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Se procesează...' : 'Cumpără'}
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-1 italic">
+            Organizatorul nu permite returul biletelor.
           </p>
-
-          <button
-            className={`${
-              isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            } text-white font-semibold px-6 py-2 rounded-full text-sm`}
-            onClick={handleBuyClick}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Se procesează...' : 'Cumpără'}
-          </button>
         </div>
 
-        <p className="text-xs text-gray-500 mt-1 italic">
-          Organizatorul nu permite returul biletelor.
-        </p>
+        <div className="bg-white p-4 shadow-md rounded-lg mb-10">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2 border-b pb-1">Detalii</h2>
+          <p className={`text-gray-700 whitespace-pre-line text-sm ${showFullDescription ? '' : 'line-clamp-6'}`}>
+            {description}
+          </p>
+          <button
+            onClick={toggleDescription}
+            className="mt-2 text-blue-600 font-semibold text-sm focus:outline-none"
+          >
+            {showFullDescription ? 'Mai puțin' : 'Mai mult'}
+          </button>
+        </div>
       </div>
 
-      {/* Card detalii */}
-      <div className="bg-white mt-4 p-4 shadow-md rounded-lg mx-4 mb-10">
-        <h2 className="text-lg font-semibold text-gray-800 mb-2 border-b pb-1">Detalii</h2>
+      {/* DESIGN DESKTOP */}
+      <div className="hidden md:flex md:flex-col md:items-center md:mt-10 md:pb-10">
+        <div className="bg-white p-6 rounded-lg shadow-md md:max-w-6xl md:w-full">
+          <div className="flex gap-10">
+            {/* Imagine */}
+            <img
+              src={event.image}
+              alt="Event"
+              className="w-[360px] h-[460px] object-cover rounded-lg shadow"
+            />
+            {/* Info + detalii */}
+            <div className="flex flex-col justify-start flex-1">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">{event.title}</h1>
+              <div className="flex items-center text-gray-700 mb-2 text-lg">
+                <FaMapMarkerAlt className="mr-2 text-blue-600" />
+                <span>{event.location}, {event.city}</span>
+              </div>
+              <div className="flex items-center text-gray-700 mb-4 text-lg">
+                <FaClock className="mr-2 text-blue-600" />
+                <span>{event.date}, ora {event.time}</span>
+              </div>
 
-        <p className={`text-gray-700 whitespace-pre-line text-sm ${showFullDescription ? '' : 'line-clamp-6'}`}>
-          {description}
-        </p>
+              {/* Detalii (toată descrierea) */}
+              <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+                {description}
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <button
-          onClick={toggleDescription}
-          className="mt-2 text-blue-600 font-semibold text-sm focus:outline-none"
-        >
-          {showFullDescription ? 'Mai puțin' : 'Mai mult'}
-        </button>
+        {/* Card cumpărare bilet separat */}
+        <div className="bg-white mt-10 p-8 rounded-lg shadow-lg w-full max-w-2xl">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Acces eveniment</h2>
+          <p className="text-gray-700 text-base mb-3">
+            Accesul oferă intrarea la eveniment pentru data selectată. Biletul este valabil o singură dată și permite accesul unei singure persoane.
+            Vă rugăm să ajungeți cu cel puțin 15 minute înainte de începerea evenimentului. Copiii pot avea nevoie de bilet separat, în funcție de politica organizatorului.
+          </p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-gray-800 text-3xl font-bold">
+              {lei}<sup className="text-lg align-super">{bani}</sup> lei
+            </p>
+            <button
+              className={`${
+                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white font-semibold px-10 py-3 rounded-full text-base`}
+              onClick={handleBuyClick}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Se procesează...' : 'Cumpără'}
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 italic">Biletele nu sunt returnabile</p>
+        </div>
       </div>
     </div>
   );
