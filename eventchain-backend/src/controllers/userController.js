@@ -80,7 +80,23 @@ const getMyTickets = async (req, res) => {
   }
 };
 
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('name email'); // adăugă și alte câmpuri dacă vrei
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utilizatorul nu a fost găsit' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Eroare la getCurrentUser:', error);
+    res.status(500).json({ error: 'Eroare server' });
+  }
+};
+
   module.exports = { 
     googleOAuthCallback,
-    getMyTickets
+    getMyTickets,
+    getCurrentUser
    };

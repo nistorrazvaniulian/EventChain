@@ -34,6 +34,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/manager-tickets', managerTicketRoutes);
 app.use('/api/scan', scanRoutes);
+app.use('/api/users', userRoutes);
 
 // Test ruta
 app.get('/', (req, res) => {

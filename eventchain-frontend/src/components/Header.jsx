@@ -3,11 +3,13 @@ import { useState } from 'react';
 import logo from '../assets/Logo.png';
 import categories from '../api/mockCategories';
 import cities from '../api/mockCities';
+import LogoutModal from '../components/LogoutModal'; // ✅ import corect
 
 const Header = ({ onMenuToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogoClick = () => {
     if (location.pathname === '/') {
@@ -17,12 +19,20 @@ const Header = ({ onMenuToggle }) => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogoutConfirm = () => {
+    setShowLogoutModal(false);
     navigate('/logout');
   };
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow px-4 py-3 sm:px-6 md:px-8">
+      {showLogoutModal && (
+        <LogoutModal
+          onConfirm={handleLogoutConfirm}
+          onCancel={() => setShowLogoutModal(false)}
+        />
+      )}
+
       {/* ✅ Mobile Header */}
       <div className="flex justify-between items-center lg:hidden">
         <button onClick={handleLogoClick}>
@@ -49,7 +59,6 @@ const Header = ({ onMenuToggle }) => {
 
         {/* Search + Dropdowns */}
         <div className="flex items-center gap-6">
-          {/* Search */}
           <input
             type="text"
             placeholder="Caută artist, trupă, locație"
@@ -132,7 +141,7 @@ const Header = ({ onMenuToggle }) => {
           </button>
           <button
             className="text-red-600 hover:text-red-800"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
           >
             <i className="fa-solid fa-right-from-bracket text-lg" />
           </button>
