@@ -2,20 +2,28 @@ import { useNavigate } from 'react-router-dom';
 
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
-  const [lei, bani] = event.price?.split('.') ?? ['0', '00'];
+  const imageBaseURL = import.meta.env.VITE_IMAGE_URL;
+
+  const imagePath = `${imageBaseURL}/${event.image}`;
+
+  const priceString = String(event.price ?? '0.00');
+  const [lei, bani] = priceString.split('.') ?? ['0', '00'];
 
   const handleClick = () => {
-    navigate(`/event/${event.id}`);
+    navigate(`/event/${event._id}`);
   };
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md">
-      {/* Imagine clicabilă */}
       <div className="relative cursor-pointer" onClick={handleClick}>
         <img
-          src={event.image}
-          alt="eveniment"
+          src={imagePath}
+          alt="Eveniment"
           className="w-full h-48 object-cover"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/placeholder.jpg';
+          }}
         />
         <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] px-2 py-1 rounded font-semibold uppercase">
           {event.category}
@@ -31,12 +39,18 @@ const EventCard = ({ event }) => {
             {event.location}, {event.city}
           </p>
           <p className="text-gray-500 text-sm">
-            {event.date} • {event.time}
+            {new Date(event.date).toLocaleDateString('ro-RO')} • ora{' '}
+            {new Date(event.date).toLocaleTimeString('ro-RO', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            })}
           </p>
         </div>
         <div className="flex flex-col items-end flex-shrink-0 text-right">
           <p className="text-sm text-gray-600 mb-1">
-            de la <span className="text-sm">{lei}</span>
+            <span className="font-semibold">Preț:</span>{' '}
+            <span className="text-sm">{lei}</span>
             <sup className="align-super text-[10px]">{bani}</sup> lei
           </p>
           <button

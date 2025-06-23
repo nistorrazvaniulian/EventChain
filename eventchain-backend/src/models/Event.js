@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 
 const eventSchema = new mongoose.Schema({
   title: {
@@ -25,7 +25,8 @@ const eventSchema = new mongoose.Schema({
   },
   isClosed: { 
     type: Boolean, 
-    default: false },
+    default: false 
+  },
   location: { 
     type: String, 
     required: true 
@@ -35,21 +36,29 @@ const eventSchema = new mongoose.Schema({
     required: true 
   },
   category: {
-  type: String,
-  enum: [
-    'Concert',
-    'Teatru',
-    'Stand-up Comedy',
-    'Sport',
-    'Festival',
-    'Conferință',
-    'Workshop',
-    'Târg & Expo',
-    'Petrecere',
-    'Altele'
-  ],
-  required: true
- }
+    type: String,
+    enum: [
+      'Concert',
+      'Teatru',
+      'Stand-up Comedy',
+      'Sport',
+      'Festival',
+      'Conferință',
+      'Workshop',
+      'Târg & Expo',
+      'Petrecere',
+      'Altele'
+    ],
+    required: true
+  },
+  image: {
+    type: String,
+    required: true // sau false dacă vrei fallback
+  },
+  price: {
+    type: Number,
+    required: true
+  }
 });
 
 module.exports = mongoose.model('Event', eventSchema);

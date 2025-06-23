@@ -4,21 +4,50 @@ const Ticket = require('../models/Ticket');
 
 const createEvent = async (req, res) => {
   try {
-    const { title, description, date, totalTickets, location, city, category } = req.body;
+    const {
+      title,
+      description,
+      date,
+      totalTickets,
+      location,
+      city,
+      category,
+      price
+    } = req.body;
 
-    if (!title || !date || !totalTickets || !location || !city || !category) {
-      return res.status(400).json({ error: 'Title, date, totalTickets, location, city și category sunt obligatorii' });
+    // Verificare fișier imagine
+    if (!req.file) {
+      return res.status(400).json({ error: 'Imaginea evenimentului este obligatorie' });
     }
 
+    // Salvăm doar numele fișierului (fără /uploads/)
+    const imageFileName = req.file.filename;
+
+    // Validare câmpuri text
+    if (!title || !date || !totalTickets || !location || !city || !category || !price) {
+      return res.status(400).json({
+        error: 'Câmpurile title, date, totalTickets, location, city, category, price și imagine sunt obligatorii'
+      });
+    }
+
+    // Validare preț pozitiv
+    const numericPrice = Number(price);
+    if (isNaN(numericPrice) || numericPrice <= 0) {
+      return res.status(400).json({ error: 'Prețul trebuie să fie un număr pozitiv' });
+    }
+
+    // Creare eveniment
     const event = new Event({
       title,
       description,
       date,
       totalTickets,
-      organizerId: req.manager.id,
       location,
       city,
-      category
+      category,
+      image: imageFileName, // salvăm doar numele fișierului
+      price: numericPrice,
+      organizerId: req.manager.id
     });
 
     await event.save();
@@ -29,6 +58,8 @@ const createEvent = async (req, res) => {
     res.status(500).json({ error: 'Eroare internă server' });
   }
 };
+
+
 
 const getAllEvents = async (req, res) => {
   try {
@@ -60,7 +91,16 @@ const getEventTickets = async (req, res) => {
 const updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { title, description, date, totalTickets, location, city, category } = req.body;
+    const {
+      title,
+      description,
+      date,
+      totalTickets,
+      location,
+      city,
+      category,
+      price
+    } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
       return res.status(400).json({ error: 'ID eveniment invalid' });
@@ -82,6 +122,19 @@ const updateEvent = async (req, res) => {
 
     if (totalTickets !== undefined && totalTickets < event.ticketsSold) {
       return res.status(400).json({ error: `Nu poți seta totalTickets mai mic decât biletele vândute (${event.ticketsSold})` });
+    }
+
+    if (price !== undefined) {
+      const numericPrice = Number(price);
+      if (isNaN(numericPrice) || numericPrice <= 0) {
+        return res.status(400).json({ error: 'Prețul trebuie să fie un număr pozitiv' });
+      }
+      event.price = numericPrice;
+    }
+
+    // ✅ Salvăm doar numele fișierului (fără /uploads)
+    if (req.file) {
+      event.image = req.file.filename;
     }
 
     if (title !== undefined) event.title = title;

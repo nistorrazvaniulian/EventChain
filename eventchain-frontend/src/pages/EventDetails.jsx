@@ -1,21 +1,35 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import NavbarMenu from '../components/NavbarMenu';
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
-import events from '../api/mockEvents';
 
 const EventDetails = () => {
   const { id } = useParams();
-  const event = events.find(e => e.id === Number(id));
+  const apiBaseUrl = import.meta.env.VITE_API_URL;
+  const imageBaseUrl = import.meta.env.VITE_IMAGE_URL;
 
+  const [event, setEvent] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggleDescription = () => {
-    setShowFullDescription(prev => !prev);
-  };
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const res = await fetch(`${apiBaseUrl}/events`);
+        const data = await res.json();
+        const selected = data.find(e => e._id === id);
+        setEvent(selected);
+      } catch (err) {
+        console.error('Eroare la fetch:', err);
+      }
+    };
+
+    fetchEvent();
+  }, [id, apiBaseUrl]);
+
+  const toggleDescription = () => setShowFullDescription(prev => !prev);
 
   const handleBuyClick = () => {
     setIsLoading(true);
@@ -25,21 +39,25 @@ const EventDetails = () => {
     }, 1000);
   };
 
-  const description = `
-Get ready for a night like no other as the moon lights up the sky and we light up the dance floor! Introducing FULL MOON PARTY, a brand-new monthly concept at FORM Space, where we celebrate the energy, mystery, and magic of the full moon with electrifying beats and unparalleled vibes.
-
-Starring Alex Super Beats, a powerhouse behind the decks, Alex Super Beats will take you on an unforgettable musical journey, blending pulsating rhythms and hypnotic grooves that will keep you dancing under the moonlit sky all night long.
-
-Join us every month when the full moon rises, and let’s create a night of pure magic together.
-
-This isn’t just a party; it’s a cosmic experience.
-  `;
-
   if (!event) {
     return <div className="text-center mt-10 text-red-600">Evenimentul nu a fost găsit.</div>;
   }
 
-  const [lei, bani] = event.price.split('.');
+  const [lei, bani] = String(event.price ?? '0.00').split('.');
+  const imageUrl = `${imageBaseUrl}/${event.image}`;
+  const description = event.description || `Get ready for a night like no other as the moon lights up the sky and we light up the dance floor!`;
+
+  const rawDate = new Date(event.date);
+  const weekday = rawDate.toLocaleDateString('ro-RO', { weekday: 'long' });
+  const capitalizedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+  const formattedDate = `${capitalizedWeekday}, ${rawDate.toLocaleDateString('ro-RO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })}, ora ${rawDate.toLocaleTimeString('ro-RO', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })}`;
 
   return (
     <div className="min-h-screen bg-gray-100 pt-[80px]">
@@ -48,7 +66,7 @@ This isn’t just a party; it’s a cosmic experience.
 
       {/* DESIGN MOBIL */}
       <div className="md:hidden mt-4 px-4">
-        <img src={event.image} alt="Event" className="w-full h-64 object-cover rounded-lg mb-4" />
+        <img src={imageUrl} alt="Event" className="w-full h-64 object-cover rounded-lg mb-4" />
         <h1 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h1>
         <div className="flex items-center text-gray-600 mb-1">
           <FaMapMarkerAlt className="mr-2 text-blue-600" />
@@ -56,7 +74,7 @@ This isn’t just a party; it’s a cosmic experience.
         </div>
         <div className="flex items-center text-gray-600 mb-4">
           <FaClock className="mr-2 text-blue-600" />
-          <span>{event.date}, ora {event.time}</span>
+          <span>{formattedDate}</span>
         </div>
 
         <div className="bg-white p-4 shadow-md rounded-lg mb-4">
@@ -85,12 +103,14 @@ This isn’t just a party; it’s a cosmic experience.
           <p className={`text-gray-700 whitespace-pre-line text-sm ${showFullDescription ? '' : 'line-clamp-6'}`}>
             {description}
           </p>
-          <button
-            onClick={toggleDescription}
-            className="mt-2 text-blue-600 font-semibold text-sm focus:outline-none"
-          >
-            {showFullDescription ? 'Mai puțin' : 'Mai mult'}
-          </button>
+          {description.length > 240 && (
+            <button
+              onClick={toggleDescription}
+              className="mt-2 text-blue-600 font-semibold text-sm focus:outline-none"
+            >
+              {showFullDescription ? 'Mai puțin' : 'Mai mult'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -98,13 +118,11 @@ This isn’t just a party; it’s a cosmic experience.
       <div className="hidden md:flex md:flex-col md:items-center md:mt-10 md:pb-10">
         <div className="bg-white p-6 rounded-lg shadow-md md:max-w-6xl md:w-full">
           <div className="flex gap-10">
-            {/* Imagine */}
             <img
-              src={event.image}
+              src={imageUrl}
               alt="Event"
               className="w-[360px] h-[460px] object-cover rounded-lg shadow"
             />
-            {/* Info + detalii */}
             <div className="flex flex-col justify-start flex-1">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">{event.title}</h1>
               <div className="flex items-center text-gray-700 mb-2 text-lg">
@@ -113,10 +131,9 @@ This isn’t just a party; it’s a cosmic experience.
               </div>
               <div className="flex items-center text-gray-700 mb-4 text-lg">
                 <FaClock className="mr-2 text-blue-600" />
-                <span>{event.date}, ora {event.time}</span>
+                <span>{formattedDate}</span>
               </div>
 
-              {/* Detalii (toată descrierea) */}
               <p className="text-gray-700 whitespace-pre-line leading-relaxed">
                 {description}
               </p>
@@ -124,7 +141,6 @@ This isn’t just a party; it’s a cosmic experience.
           </div>
         </div>
 
-        {/* Card cumpărare bilet separat */}
         <div className="bg-white mt-10 p-8 rounded-lg shadow-lg w-full max-w-2xl">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Acces eveniment</h2>
           <p className="text-gray-700 text-base mb-3">

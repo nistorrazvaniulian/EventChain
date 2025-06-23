@@ -1,11 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logo from '../assets/Logo.png';
 import TicketCard from '../components/TicketCard';
 import TicketModal from '../components/TicketModal';
-import mockTickets from '../api/mockTickets';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const MyTickets = () => {
+  const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const res = await fetch(`${API_URL}/users/my-tickets`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error('Eroare la extragerea biletelor');
+        }
+
+        const data = await res.json();
+        setTickets(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setError('Nu s-au putut încărca biletele. Încearcă din nou mai târziu.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -23,18 +53,23 @@ const MyTickets = () => {
         </button>
       </nav>
 
-      {/* Lista biletelor */}
+      {/* Conținut principal */}
       <main className="p-4 space-y-4">
-        {mockTickets.map(ticket => (
+        {loading && <p className="text-center text-gray-500">Se încarcă biletele...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
+        {!loading && !error && tickets.length === 0 && (
+          <p className="text-center text-gray-600">Nu ai bilete momentan.</p>
+        )}
+        {tickets.map(ticket => (
           <TicketCard
-            key={ticket.id}
+            key={ticket._id}
             ticket={ticket}
             onClick={() => setSelectedTicket(ticket)}
           />
         ))}
       </main>
 
-      {/* Modal bilet */}
+      {/* Modal pentru bilet selectat */}
       <TicketModal ticket={selectedTicket} onClose={() => setSelectedTicket(null)} />
     </div>
   );

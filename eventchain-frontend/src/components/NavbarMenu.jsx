@@ -8,6 +8,11 @@ const NavbarMenu = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('Categorii');
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    navigate('/logout');
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-hidden">
       {/* Header */}
@@ -21,7 +26,7 @@ const NavbarMenu = ({ onClose }) => {
         {/* Utilizator + logout */}
         <div className="flex justify-between items-center border-b pb-4">
           <span className="text-lg font-semibold">Razvan</span>
-          <button onClick={() => alert('Te-ai delogat!')}>
+          <button onClick={handleLogout}>
             <i className="fa-solid fa-right-from-bracket text-xl text-red-600" />
           </button>
         </div>
@@ -61,6 +66,10 @@ const NavbarMenu = ({ onClose }) => {
             <button
               key={item}
               className="flex justify-between items-center text-left text-gray-700 px-2 py-4 hover:bg-gray-100"
+              onClick={() => {
+                navigate(`/search?${activeTab === 'Categorii' ? 'category' : 'city'}=${item}`);
+                onClose();
+              }}
             >
               {item}
               <i className="fa-solid fa-angle-right text-gray-400" />

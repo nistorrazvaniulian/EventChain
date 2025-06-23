@@ -17,6 +17,10 @@ const Header = ({ onMenuToggle }) => {
     }
   };
 
+  const handleLogout = () => {
+    navigate('/logout');
+  };
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow px-4 py-3 sm:px-6 md:px-8">
       {/* ✅ Mobile Header */}
@@ -128,7 +132,7 @@ const Header = ({ onMenuToggle }) => {
           </button>
           <button
             className="text-red-600 hover:text-red-800"
-            onClick={() => alert('Delogare')}
+            onClick={handleLogout}
           >
             <i className="fa-solid fa-right-from-bracket text-lg" />
           </button>

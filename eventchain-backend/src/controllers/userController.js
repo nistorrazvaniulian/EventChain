@@ -1,18 +1,34 @@
+const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Ticket = require('../models/Ticket');
 const keys = require('../config/keys');
+
 const client = new OAuth2Client(keys.googleClientId);
 
-const googleLogin = async (req, res) => {
-  const { id_token } = req.body;
+const googleOAuthCallback = async (req, res) => {
+  const { code } = req.query;
 
-  if (!id_token) {
-    return res.status(400).json({ error: 'ID token is missing' });
+  if (!code) {
+    return res.status(400).json({ error: 'Missing code in query' });
   }
 
   try {
+    // 1. Cerem tokenurile de la Google
+    const tokenRes = await axios.post('https://oauth2.googleapis.com/token', null, {
+      params: {
+        code,
+        client_id: keys.googleClientId,
+        client_secret: keys.googleClientSecret,
+        redirect_uri: 'http://localhost:3000/api/users/google/callback',
+        grant_type: 'authorization_code',
+      },
+    });
+
+    const { id_token } = tokenRes.data;
+
+    // 2. Verificăm id_token-ul
     const ticket = await client.verifyIdToken({
       idToken: id_token,
       audience: keys.googleClientId,
@@ -25,33 +41,25 @@ const googleLogin = async (req, res) => {
       return res.status(401).json({ error: 'Invalid Google ID token' });
     }
 
+    // 3. Creăm userul dacă nu există
     let user = await User.findOne({ googleId: sub });
-
     if (!user) {
       user = new User({ email, name, googleId: sub });
       await user.save();
     }
 
+    // 4. Semnăm JWT-ul propriu
     const token = jwt.sign(
       { id: user._id, email: user.email, role: 'user' },
       keys.jwtSecret,
       { expiresIn: '1h' }
     );
 
-    return res.status(200).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
+    // 5. Redirecționăm spre pagina intermediară
+    return res.redirect(`http://localhost:5173/auth-callback?token=${token}`);
   } catch (error) {
-    console.error('Google login error:', error);
-    const isGoogleError = error.message?.includes('Wrong number of segments') || error.message?.includes('Invalid token');
-    return res.status(isGoogleError ? 401 : 500).json({
-      error: isGoogleError ? 'Invalid Google ID token' : 'Eroare internă server'
-    });
+    console.error('Google OAuth error:', error.response?.data || error.message);
+    return res.status(500).send('Authentication failed');
   }
 };
 
@@ -63,7 +71,7 @@ const getMyTickets = async (req, res) => {
       return res.status(401).json({ error: 'Acces neautorizat' });
     }
 
-    const tickets = await Ticket.find({ userId });
+    const tickets = await Ticket.find({ userId }).populate('eventId');
 
     res.status(200).json(Array.isArray(tickets) ? tickets : []);
   } catch (err) {
@@ -73,6 +81,6 @@ const getMyTickets = async (req, res) => {
 };
 
   module.exports = { 
-    googleLogin,
+    googleOAuthCallback,
     getMyTickets
    };

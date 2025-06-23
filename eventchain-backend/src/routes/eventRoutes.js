@@ -1,15 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { createEvent, getAllEvents, getEventTickets, updateEvent, deleteEvent } = require('../controllers/eventController');
+const {
+  createEvent,
+  getAllEvents,
+  getEventTickets,
+  updateEvent,
+  deleteEvent
+} = require('../controllers/eventController');
 const auth = require('../middleware/verifyManager');
+const upload = require('../middleware/uploadMiddleware');
 
-router.post('/', auth, createEvent);
+// ✅ Create cu imagine
+router.post('/', auth, upload.single('image'), createEvent);
 
+// ✅ Publică
 router.get('/', getAllEvents);
+
+// ✅ Privat pentru manager
 router.get('/:eventId/tickets', auth, getEventTickets);
 
-router.put('/:eventId', auth, updateEvent);
+// ✅ Update cu suport pentru imagine nouă
+router.put('/:eventId', auth, upload.single('image'), updateEvent);
 
+// ✅ Ștergere
 router.delete('/:eventId', auth, deleteEvent);
 
 module.exports = router;
