@@ -6,7 +6,9 @@ import EventDetails from './pages/EventDetails';
 import MyTickets from './pages/MyTickets';
 import AuthCallback from './pages/AuthCallback';
 import Logout from './pages/Logout';
-import NotFound from './pages/NotFound'; // ✅ pagina 404
+import NotFound from './pages/NotFound';
+import PaymentSuccess from './pages/PaymentSuccess'; // ✅ adăugat
+import PaymentCancel from './pages/PaymentCancel';   // ✅ adăugat
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -39,6 +41,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />  {/* ✅ nou */}
+        <Route path="/payment-cancel" element={<PaymentCancel />} />    {/* ✅ nou */}
 
         {/* 🛑 Pagina fallback 404 */}
         <Route path="*" element={<NotFound />} />

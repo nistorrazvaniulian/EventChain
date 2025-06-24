@@ -15,19 +15,27 @@ const TicketModal = ({ ticket, onClose }) => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [onClose]);
 
-  if (!ticket) return null;
+  if (!ticket || !ticket.eventId) return null;
+
+  const event = ticket.eventId;
+  const dateObj = new Date(event.date);
+  const formattedDate = dateObj.toLocaleDateString('ro-RO');
+  const formattedTime = dateObj.toLocaleTimeString('ro-RO', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center px-4">
-      {/* Fundal blurat subtil */}
+      {/* Fundal blurat */}
       <div className="absolute inset-0 bg-white/30 backdrop-blur-md" />
 
-      {/* Conținut modal */}
       <div
         ref={modalRef}
         className="bg-white rounded-xl w-full max-w-sm p-6 shadow-xl z-10 relative"
       >
-        {/* Buton ✕ sus dreapta */}
+        {/* Buton ✕ */}
         <button
           onClick={onClose}
           className="absolute top-3 right-4 text-gray-500 text-xl"
@@ -40,21 +48,21 @@ const TicketModal = ({ ticket, onClose }) => {
 
         {/* QR Code */}
         <div className="flex justify-center mb-4">
-          <QRCodeCanvas value={ticket.qrValue} size={120} />
+          <QRCodeCanvas value={ticket.qrCode} size={120} />
         </div>
 
-        {/* Detalii bilet */}
+        {/* Detalii */}
         <p className="text-center text-sm font-semibold text-gray-900 leading-tight mb-1 line-clamp-2">
-          {ticket.title}
+          {event.title}
         </p>
         <p className="text-center text-sm text-gray-600">
-          {ticket.location}, {ticket.city}
+          {event.location}, {event.city}
         </p>
         <p className="text-center text-sm text-gray-500">
-          {ticket.date}, ora {ticket.time}
+          {formattedDate}, ora {formattedTime}
         </p>
 
-        {/* Buton Închide */}
+        {/* Buton închidere */}
         <div className="mt-6 flex justify-center">
           <button
             onClick={onClose}

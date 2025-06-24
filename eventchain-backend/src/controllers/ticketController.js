@@ -19,59 +19,15 @@ const buyTicket = async (req, res) => {
       return res.status(401).json({ error: 'Utilizator neautentificat' });
     }
 
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
-    }
-
-    if (event.ticketsSold >= event.totalTickets) {
-      return res.status(400).json({ error: 'Nu mai sunt bilete disponibile' });
-    }
-
-    const qrCode = uuidv4();
-    const createdAt = new Date();
-    const ticketId = new Ticket({ eventId, userId, qrCode, createdAt })._id.toString();
-
-    let contract, gateway;
-    try {
-      const blockchain = await connect();
-      contract = blockchain.contract;
-      gateway = blockchain.gateway;
-
-      await contract.submitTransaction(
-        'createTicket',
-        ticketId,
-        eventId.toString(),
-        userId.toString(),
-        event.date.toISOString(),
-        createdAt.toISOString()
-      );
-      await gateway.disconnect();
-    } catch (err) {
-      if (gateway) await gateway.disconnect();
-      return res.status(500).json({ error: 'Eroare la salvarea biletului în blockchain' });
-    }
-
-    const ticket = new Ticket({
-      _id: ticketId,
-      eventId,
+    const { status, ticket } = await createTicketFlow({
       userId,
-      qrCode,
-      createdAt
+      userEmail,
+      eventId
     });
-    await ticket.save();
 
-    event.ticketsSold += 1;
-    await event.save();
-
-    const qrPath = path.join(__dirname, '..', 'temp', `${ticketId}.png`);
-    await generateQRCode(ticketId, qrPath);
-
-    try {
-      await sendTicketEmail(userEmail, event.title, qrPath, ticketId);
-    } catch (e) {}
-
-    if (fs.existsSync(qrPath)) fs.unlinkSync(qrPath);
+    if (status === 'exists') {
+      return res.status(409).json({ error: 'Ai deja un bilet pentru acest eveniment' });
+    }
 
     res.status(201).json({
       message: 'Bilet cumpărat cu succes',
@@ -83,7 +39,7 @@ const buyTicket = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Eroare la cumpărare bilet:', error);
+    console.error('Eroare la cumpărare bilet:', error.message);
     res.status(500).json({ error: 'Eroare internă server' });
   }
 };

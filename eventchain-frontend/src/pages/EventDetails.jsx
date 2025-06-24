@@ -31,12 +31,39 @@ const EventDetails = () => {
 
   const toggleDescription = () => setShowFullDescription(prev => !prev);
 
-  const handleBuyClick = () => {
+  const handleBuyClick = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${apiBaseUrl}/payments/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          eventId: event._id,
+          title: event.title,
+          price: event.price,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        if (data.error === 'Ai deja un bilet pentru acest eveniment.') {
+          alert('⚠️ Ai deja un bilet pentru acest eveniment.');
+        } else {
+          alert(data.error || 'Eroare la inițializarea plății');
+        }
+      }
+    } catch (err) {
+      console.error('Eroare la cumpărare:', err);
+      alert('A apărut o eroare. Încearcă din nou.');
+    } finally {
       setIsLoading(false);
-      alert('Funcționalitate în curs de implementare');
-    }, 1000);
+    }
   };
 
   if (!event) {
@@ -45,7 +72,7 @@ const EventDetails = () => {
 
   const [lei, bani] = String(event.price ?? '0.00').split('.');
   const imageUrl = `${imageBaseUrl}/${event.image}`;
-  const description = event.description || `Get ready for a night like no other as the moon lights up the sky and we light up the dance floor!`;
+  const description = event.description || `Get ready for a night like no other...`;
 
   const rawDate = new Date(event.date);
   const weekday = rawDate.toLocaleDateString('ro-RO', { weekday: 'long' });
