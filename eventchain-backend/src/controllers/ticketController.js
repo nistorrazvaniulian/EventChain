@@ -7,6 +7,7 @@ const fs = require('fs');
 
 const generateQRCode = require('../utils/generateQRCode');
 const sendTicketEmail = require('../utils/sendTicketEmail');
+const createTicketFlow = require('../utils/createTicketFlow');
 const { getTicket } = require('../services/blockchainService');
 
 const buyTicket = async (req, res) => {

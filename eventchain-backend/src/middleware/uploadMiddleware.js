@@ -4,7 +4,7 @@ const path = require('path');
 // Configurare storage: unde și cum se salvează fișierul
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // folderul uploads trebuie să fie în root
+    cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${file.originalname}`;

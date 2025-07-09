@@ -5,7 +5,8 @@ const {
   getAllEvents,
   getEventTickets,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  getEventById
 } = require('../controllers/eventController');
 const auth = require('../middleware/verifyManager');
 const upload = require('../middleware/uploadMiddleware');
@@ -21,6 +22,8 @@ router.get('/:eventId/tickets', auth, getEventTickets);
 
 // ✅ Update cu suport pentru imagine nouă
 router.put('/:eventId', auth, upload.single('image'), updateEvent);
+
+router.get('/:eventId', auth, getEventById);
 
 // ✅ Ștergere
 router.delete('/:eventId', auth, deleteEvent);

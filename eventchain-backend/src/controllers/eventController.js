@@ -59,8 +59,6 @@ const createEvent = async (req, res) => {
   }
 };
 
-
-
 const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
@@ -70,6 +68,24 @@ const getAllEvents = async (req, res) => {
     res.status(500).json({ error: 'Eroare internă server' });
   }
 };
+
+const getEventsByManager = async (req, res) => {
+  try {
+    const managerId = req.manager?.id || req.manager?._id;
+
+    if (!managerId) {
+      return res.status(401).json({ error: 'Manager neautorizat' });
+    }
+
+    const events = await Event.find({ organizerId: managerId }).sort({ date: 1 });
+
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Eroare la extragerea evenimentelor pentru manager:', error);
+    res.status(500).json({ error: 'Eroare internă server' });
+  }
+};
+
 
 const getEventTickets = async (req, res) => {
   try {
@@ -183,11 +199,34 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const getEventById = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ error: 'ID eveniment invalid' });
+    }
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ error: 'Evenimentul nu a fost găsit' });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error('Eroare la preluarea evenimentului:', error);
+    res.status(500).json({ error: 'Eroare internă server' });
+  }
+};
+
 module.exports = {
   createEvent,
   getAllEvents,
   getEventTickets,
   deleteEvent,
-  updateEvent
+  updateEvent,
+  getEventsByManager,
+  getEventById
 };
 

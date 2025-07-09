@@ -7,6 +7,8 @@ const {
     createTestManager
 } = require('../controllers/managerController');
 
+const { getEventsByManager } = require('../controllers/eventController');
+
 router.post('/test', createTestManager);
 router.post('/login', loginManager);
 
@@ -16,5 +18,7 @@ router.get('/protected', auth, (req, res) => {
     user: req.user
   });
 });
+
+router.get('/events', auth, getEventsByManager);
 
 module.exports = router;

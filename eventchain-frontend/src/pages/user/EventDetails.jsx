@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import NavbarMenu from '../components/NavbarMenu';
+import Header from '../../components/Header';
+import NavbarMenu from "../../components/user/NavbarMenu";
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 
 const EventDetails = () => {

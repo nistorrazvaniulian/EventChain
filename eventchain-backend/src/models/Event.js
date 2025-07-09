@@ -53,7 +53,7 @@ const eventSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true // sau false dacă vrei fallback
+    required: true
   },
   price: {
     type: Number,

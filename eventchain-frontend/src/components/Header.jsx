@@ -3,7 +3,7 @@ import { useState } from 'react';
 import logo from '../assets/Logo.png';
 import categories from '../api/mockCategories';
 import cities from '../api/mockCities';
-import LogoutModal from '../components/LogoutModal'; // ✅ import corect
+import LogoutModal from "./user/LogoutModal";
 
 const Header = ({ onMenuToggle }) => {
   const navigate = useNavigate();

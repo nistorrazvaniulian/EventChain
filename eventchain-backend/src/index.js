@@ -36,12 +36,12 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ✅ Rute API
 app.use('/api/users', userRoutes);
-app.use('/api/managers', managerRoutes);
+app.use('/api/manager', managerRoutes); 
 app.use('/api/events', eventRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/manager-tickets', managerTicketRoutes);
 app.use('/api/scan', scanRoutes);
-app.use('/api/payments', paymentRoutes); // alte rute stripe, ex: /create-checkout-session
+app.use('/api/payments', paymentRoutes);
 
 // 🧪 Test
 app.get('/', (req, res) => {

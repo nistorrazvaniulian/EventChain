@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/Logo.png';
-import categories from '../api/mockCategories';
-import cities from '../api/mockCities';
+import logo from "../../assets/Logo.png";
+import categories from '../../api/mockCategories';
+import cities from '../../api/mockCities';
 import LogoutModal from './LogoutModal'; // ✅ Importăm modalul
 
 const NavbarMenu = ({ onClose }) => {

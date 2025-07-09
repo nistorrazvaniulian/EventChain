@@ -1,5 +1,5 @@
-import googleIcon from '../assets/google-icon.png';
-import partyIllustration from '../assets/undraw_having-fun_kkeu.svg';
+import googleIcon from '../../assets/google-icon.png';
+import partyIllustration from "../../assets/undraw_having-fun_kkeu.svg";
 
 const Login = () => {
   const handleLogin = () => {

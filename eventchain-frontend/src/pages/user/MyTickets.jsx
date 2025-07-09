@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import logo from '../assets/Logo.png';
-import TicketCard from '../components/TicketCard';
-import TicketModal from '../components/TicketModal';
+import logo from '../../assets/Logo.png';
+import TicketCard from "../../components/user/TicketCard";
+import TicketModal from "../../components/user/TicketModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import NavbarMenu from '../components/NavbarMenu';
-import EventCard from '../components/EventCard';
+import Header from '../../components/Header';
+import NavbarMenu from "../../components/user/NavbarMenu";
+import EventCard from "../../components/user/EventCard";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
