@@ -8,6 +8,8 @@ const generateQRCode = require('./generateQRCode');
 const sendTicketEmail = require('./sendTicketEmail');
 
 const createTicketFlow = async ({ userId, userEmail, eventId }) => {
+  console.log('🎯 createTicketFlow pornit');
+
   // Verificăm dacă biletul există deja
   const existing = await Ticket.findOne({ userId, eventId });
   if (existing) return { status: 'exists', ticket: existing };
@@ -65,7 +67,14 @@ const createTicketFlow = async ({ userId, userEmail, eventId }) => {
     qrCode,
     createdAt
   });
-  await ticket.save();
+
+  try {
+    await ticket.save();
+    console.log('🟢 Ticket salvat în MongoDB');
+  } catch (err) {
+    console.error('❌ Eroare salvare ticket:', err.message);
+    throw new Error('Eroare la salvarea în MongoDB');
+  }
 
   // Update număr bilete
   event.ticketsSold += 1;

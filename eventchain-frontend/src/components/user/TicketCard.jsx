@@ -3,6 +3,15 @@ import { QRCodeCanvas } from 'qrcode.react';
 const TicketCard = ({ ticket, onClick }) => {
   const event = ticket.eventId;
 
+  // Dacă evenimentul nu mai există (a fost șters)
+  if (!event) {
+    return (
+      <div className="bg-red-100 text-red-700 p-4 rounded-lg">
+        Acest bilet este asociat unui eveniment care a fost șters.
+      </div>
+    );
+  }
+
   const dateObj = new Date(event.date);
   const formattedDate = dateObj.toLocaleDateString('ro-RO');
   const formattedTime = dateObj.toLocaleTimeString('ro-RO', {

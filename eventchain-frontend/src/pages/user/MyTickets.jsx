@@ -25,7 +25,13 @@ const MyTickets = () => {
         }
 
         const data = await res.json();
-        setTickets(Array.isArray(data) ? data : []);
+
+        // ✅ Aici filtrăm biletele fără eveniment asociat
+        const validTickets = Array.isArray(data)
+          ? data.filter(ticket => ticket.eventId !== null)
+          : [];
+
+        setTickets(validTickets);
       } catch (err) {
         console.error(err);
         setError('Nu s-au putut încărca biletele. Încearcă din nou mai târziu.');

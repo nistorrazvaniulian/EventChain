@@ -12,6 +12,8 @@ const { getTicket } = require('../services/blockchainService');
 
 const buyTicket = async (req, res) => {
   try {
+    console.log('🎟️  buyTicket apelat'); // 👈 Log pentru a verifica dacă intrăm în funcție
+
     const eventId = req.params.eventId;
     const userId = req.user?.id;
     const userEmail = req.user?.email;
@@ -44,6 +46,7 @@ const buyTicket = async (req, res) => {
     res.status(500).json({ error: 'Eroare internă server' });
   }
 };
+
 
 const getTicketFromBlockchain = async (req, res) => {
   try {

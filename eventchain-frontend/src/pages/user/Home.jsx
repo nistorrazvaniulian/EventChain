@@ -15,7 +15,11 @@ const Home = () => {
       try {
         const res = await fetch(`${API_URL}/events`);
         const data = await res.json();
-        setEvents(data);
+
+        // 🔴 Filtrăm evenimentele care nu sunt închise
+        const filtered = data.filter(event => !event.isClosed);
+
+        setEvents(filtered);
       } catch (err) {
         console.error('Eroare la preluarea evenimentelor:', err);
       } finally {

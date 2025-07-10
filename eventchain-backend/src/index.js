@@ -28,7 +28,6 @@ app.use(cors({
 // ⚠️ Stripe webhook – PRIMA rută, cu body raw
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
-// ✅ Apoi putem folosi express.json()
 app.use(express.json());
 
 // 🖼️ Servire imagini din uploads

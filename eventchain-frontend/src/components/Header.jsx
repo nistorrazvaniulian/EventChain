@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../assets/Logo.png';
-import categories from '../api/mockCategories';
-import cities from '../api/mockCities';
+import categories from '../constants/eventCategories';
+import cities from '../constants/cities'; 
 import LogoutModal from "./user/LogoutModal";
 
 const Header = ({ onMenuToggle }) => {
@@ -87,7 +87,7 @@ const Header = ({ onMenuToggle }) => {
                     key={cat}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => {
-                      navigate(`/search?category=${cat}`);
+                      navigate(`/search?category=${encodeURIComponent(cat)}`);
                       setHoveredDropdown(null);
                     }}
                   >
@@ -115,7 +115,7 @@ const Header = ({ onMenuToggle }) => {
                     key={city}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => {
-                      navigate(`/search?city=${city}`);
+                      navigate(`/search?city=${encodeURIComponent(city)}`);
                       setHoveredDropdown(null);
                     }}
                   >

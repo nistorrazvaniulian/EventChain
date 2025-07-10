@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaPlus, FaRightFromBracket } from 'react-icons/fa6';
-import SalesChart from '../../components/manager/SalesChart';
-import CategoryChart from '../../components/manager/CategoryChart';
 import ManagerStatCard from '../../components/manager/ManagerStatCard';
 import ManagerEventCard from '../../components/manager/ManagerEventCard';
 import eventCategories from '../../constants/eventCategories';
-import cities from '../../constants/cities'; // ✅ Import nou
+import cities from '../../constants/cities';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -73,7 +71,6 @@ const ManagerDashboard = () => {
 
   return (
     <div className="p-4 max-w-screen-xl mx-auto">
-      {/* Titlu + Butoane acțiune */}
       <div className="mb-4 sm:flex sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold mb-2 sm:mb-0">Dashboard Manager</h1>
 
@@ -139,12 +136,6 @@ const ManagerDashboard = () => {
             {stats.map((s, idx) => (
               <ManagerStatCard key={idx} label={s.label} value={s.value} />
             ))}
-          </div>
-
-          {/* Charturi */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            <SalesChart />
-            <CategoryChart events={filteredEvents} />
           </div>
 
           {/* Evenimente active */}
