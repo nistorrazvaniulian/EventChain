@@ -5,6 +5,8 @@ import SalesChart from '../../components/manager/SalesChart';
 import CategoryChart from '../../components/manager/CategoryChart';
 import ManagerStatCard from '../../components/manager/ManagerStatCard';
 import ManagerEventCard from '../../components/manager/ManagerEventCard';
+import eventCategories from '../../constants/eventCategories';
+import cities from '../../constants/cities'; // ✅ Import nou
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -107,7 +109,7 @@ const ManagerDashboard = () => {
                 className="w-full border rounded-xl px-3 py-2 text-sm"
               >
                 <option value="">Toate</option>
-                {[...new Set(events.map(e => e.city))].map(city => (
+                {cities.map(city => (
                   <option key={city} value={city}>
                     {city}
                   </option>
@@ -123,7 +125,7 @@ const ManagerDashboard = () => {
                 className="w-full border rounded-xl px-3 py-2 text-sm"
               >
                 <option value="">Toate</option>
-                {[...new Set(events.map(e => e.category))].map(cat => (
+                {eventCategories.map(cat => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>

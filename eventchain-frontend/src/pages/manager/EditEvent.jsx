@@ -3,12 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import eventCategories from '../../constants/eventCategories';
+import cities from '../../constants/cities';
+import locations from '../../constants/locations';
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-const LOCATIONS = ['Sala Palatului', 'Romexpo', 'Cluj Arena', 'Sala Polivalentă București'];
-const CITIES = ['București', 'Cluj-Napoca', 'Iași', 'Timișoara'];
-const CATEGORIES = ['Concert', 'Teatru', 'Stand-up', 'Festival', 'Conferință'];
 
 const EditEvent = () => {
   const { eventId } = useParams();
@@ -67,10 +66,12 @@ const EditEvent = () => {
   }, [eventId]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    if (name === 'city') {
+      setFormData((prev) => ({ ...prev, city: value, location: '' })); // reset location dacă orașul se schimbă
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -112,6 +113,8 @@ const EditEvent = () => {
       setSubmitting(false);
     }
   };
+
+  const availableLocations = locations[formData.city] || [];
 
   if (loading) return <div className="text-center mt-10">Se încarcă...</div>;
   if (error) return <div className="text-center mt-10 text-red-600">{error}</div>;
@@ -175,21 +178,6 @@ const EditEvent = () => {
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block font-medium">Locația *</label>
-                <select
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Alege locația</option>
-                  {LOCATIONS.map((loc) => (
-                    <option key={loc} value={loc}>{loc}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex-1">
                 <label className="block font-medium">Oraș *</label>
                 <select
                   name="city"
@@ -199,8 +187,24 @@ const EditEvent = () => {
                   className="w-full p-2 border rounded"
                 >
                   <option value="">Alege orașul</option>
-                  {CITIES.map((city) => (
+                  {cities.map((city) => (
                     <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex-1">
+                <label className="block font-medium">Locația *</label>
+                <select
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Alege locația</option>
+                  {availableLocations.map((loc) => (
+                    <option key={loc} value={loc}>{loc}</option>
                   ))}
                 </select>
               </div>
@@ -216,7 +220,7 @@ const EditEvent = () => {
                 className="w-full p-2 border rounded"
               >
                 <option value="">Alege categoria</option>
-                {CATEGORIES.map((cat) => (
+                {eventCategories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
