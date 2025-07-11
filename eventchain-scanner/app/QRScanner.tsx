@@ -16,7 +16,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from './index'; // modifică dacă `index.tsx` e în alt folder
+import type { RootStackParamList } from './index';
 
 export default function QRScanner() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -59,7 +59,7 @@ export default function QRScanner() {
           return;
         }
 
-        const validateUrl = `http://192.168.0.138:3000/api/manager-tickets/blockchain/${result.data}/validate`;
+        const validateUrl = `https://eventchain-backend.fly.dev/api/manager-tickets/blockchain/${result.data}/validate`;
         console.log('🔍 Trimitem validare spre:', validateUrl);
 
         const validateRes = await fetch(validateUrl, {
@@ -88,7 +88,7 @@ export default function QRScanner() {
           return;
         }
 
-        const invalidateUrl = `http://192.168.0.138:3000/api/manager-tickets/blockchain/${result.data}/invalidate`;
+        const invalidateUrl = `https://eventchain-backend.fly.dev/api/manager-tickets/blockchain/${result.data}/invalidate`;
         console.log('🧨 Trimitem invalidare spre:', invalidateUrl);
 
         const invalidateRes = await fetch(invalidateUrl, {

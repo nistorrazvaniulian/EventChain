@@ -3,7 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const connectDb = require('./config/db');
-const { handleStripeWebhook } = require('./controllers/paymentController'); // ✅ Import direct pt webhook
+const { handleStripeWebhook } = require('./controllers/paymentController');
 
 // 🧠 Rute
 const userRoutes = require('./routes/userRoutes');
@@ -21,7 +21,7 @@ invalidateExpiredTicketsJob();
 
 // ✅ Middleware CORS
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'process.env.FRONTEND_URL',
   credentials: true,
 }));
 
@@ -52,5 +52,5 @@ connectDb();
 
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });

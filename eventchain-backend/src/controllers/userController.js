@@ -21,7 +21,7 @@ const googleOAuthCallback = async (req, res) => {
         code,
         client_id: keys.googleClientId,
         client_secret: keys.googleClientSecret,
-        redirect_uri: 'http://localhost:3000/api/users/google/callback',
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
         grant_type: 'authorization_code',
       },
     });
@@ -56,7 +56,7 @@ const googleOAuthCallback = async (req, res) => {
     );
 
     // 5. Redirecționăm spre pagina intermediară
-    return res.redirect(`http://localhost:5173/auth-callback?token=${token}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`);
   } catch (error) {
     console.error('Google OAuth error:', error.response?.data || error.message);
     return res.status(500).send('Authentication failed');

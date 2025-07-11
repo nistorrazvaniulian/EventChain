@@ -8,7 +8,7 @@ export default function Login({ navigation }: any) {
 
   useEffect(() => {
     const resetAndCheckToken = async () => {
-      await SecureStore.deleteItemAsync('managerToken'); // 🔥 Șterge tokenul la fiecare pornire
+      await SecureStore.deleteItemAsync('managerToken');
       const token = await SecureStore.getItemAsync('managerToken');
       console.log('🔄 Token șters/verificat:', token);
       if (token) {
@@ -22,7 +22,7 @@ export default function Login({ navigation }: any) {
     console.log('➡️ Trimitem request cu:', { username, password });
 
     try {
-      const res = await fetch('http://192.168.0.138:3000/api/manager/login', {
+      const res = await fetch('https://eventchain-backend.fly.dev/api/manager/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -49,7 +49,7 @@ export default function Login({ navigation }: any) {
         Alert.alert('Eroare', data.error || 'Autentificare eșuată');
       }
     } catch (err) {
-      console.log('🔥 EROARE LOGIN', err);
+      console.log('EROARE LOGIN', err);
       Alert.alert('Eroare', 'Serverul nu a putut fi contactat');
     }
   };
