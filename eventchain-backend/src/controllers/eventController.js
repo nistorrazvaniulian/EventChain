@@ -148,7 +148,7 @@ const updateEvent = async (req, res) => {
       event.price = numericPrice;
     }
 
-    // ✅ Salvăm doar numele fișierului (fără /uploads)
+    //Salvăm doar numele fișierului (fără /uploads)
     if (req.file) {
       event.image = req.file.filename;
     }

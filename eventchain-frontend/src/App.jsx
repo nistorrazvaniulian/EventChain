@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// 🔐 Pagini user (protejate)
+// Pagini user (protejate)
 import Home from './pages/user/Home';
 import SearchPage from './pages/user/SearchPage';
 import Login from './pages/user/Login';
@@ -10,19 +10,19 @@ import EventDetails from './pages/user/EventDetails';
 import MyTickets from './pages/user/MyTickets';
 import Logout from './pages/user/Logout';
 
-// 🔓 Pagini comune/publice
+// Pagini comune/publice
 import AuthCallback from './pages/AuthCallback';
 import NotFound from './pages/NotFound';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 
-// 🔐 Protecție user
+// Protecție user
 import ProtectedRoute from './components/user/ProtectedRoute';
 
-// 🔐 Protecție manager
+// Protecție manager
 import ProtectedRouteManager from './components/manager/ProtectedRouteManager';
 
-// 👨‍💼 Pagini manager
+// Pagini manager
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 import CreateEvent from './pages/manager/CreateEvent';
 import EditEvent from './pages/manager/EditEvent';
@@ -32,11 +32,11 @@ import LogoutManager from './components/manager/LogoutManager';
 function App() {
   return (
     <Router>
-      {/* 🔔 Notificări */}
+      {/* Notificări */}
       <ToastContainer position="top-center" autoClose={3000} />
 
       <Routes>
-        {/* 🔐 Pagini protejate (user) */}
+        {/* Pagini protejate (user) */}
         <Route
           path="/"
           element={
@@ -70,14 +70,14 @@ function App() {
           }
         />
 
-        {/* 🔓 Pagini publice */}
+        {/* Pagini publice */}
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
 
-        {/* 👨‍💼 Pagini manager protejate */}
+        {/* Pagini manager protejate */}
         <Route
           path="/manager/dashboard"
           element={
@@ -103,11 +103,11 @@ function App() {
           }
         />
 
-        {/* 👨‍💼 Pagini manager neprotejate */}
+        {/* Pagini manager neprotejate */}
         <Route path="/manager/login" element={<ManagerLogin />} />
         <Route path="/manager/logout" element={<LogoutManager />} />
 
-        {/* 🛑 404 */}
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

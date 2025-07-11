@@ -8,7 +8,7 @@ export default function Login({ navigation }: any) {
 
   useEffect(() => {
     const resetAndCheckToken = async () => {
-      await SecureStore.deleteItemAsync('managerToken'); // 🔥 Șterge tokenul la fiecare pornire
+      await SecureStore.deleteItemAsync('managerToken'); // Șterge tokenul la fiecare pornire
       const token = await SecureStore.getItemAsync('managerToken');
       console.log('🔄 Token șters/verificat:', token);
       if (token) {

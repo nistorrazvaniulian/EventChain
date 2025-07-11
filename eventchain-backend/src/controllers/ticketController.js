@@ -12,7 +12,7 @@ const { getTicket } = require('../services/blockchainService');
 
 const buyTicket = async (req, res) => {
   try {
-    console.log('🎟️  buyTicket apelat'); // 👈 Log pentru a verifica dacă intrăm în funcție
+    console.log('🎟️  buyTicket apelat'); //Log pentru a verifica dacă intrăm în funcție
 
     const eventId = req.params.eventId;
     const userId = req.user?.id;

@@ -3,7 +3,7 @@ const router = express.Router();
 const verifyUser = require('../middleware/verifyUser');
 const { getMyTickets, googleOAuthCallback, getCurrentUser  } = require('../controllers/userController');
 
-// 🔒 Rută protejată
+// Rută protejată
 router.get('/protected', verifyUser, (req, res) => {
   res.json({
     message: 'Acces autorizat',
@@ -11,10 +11,10 @@ router.get('/protected', verifyUser, (req, res) => {
   });
 });
 
-// 🎟️ Biletele utilizatorului
+// Biletele utilizatorului
 router.get('/my-tickets', verifyUser, getMyTickets);
 
-// 🔁 Google OAuth 2.0 (authorization_code flow)
+// Google OAuth 2.0 (authorization_code flow)
 router.get('/google/callback', googleOAuthCallback);
 
 router.get('/me', verifyUser, getCurrentUser);

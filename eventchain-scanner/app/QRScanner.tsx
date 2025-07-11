@@ -16,11 +16,11 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from './index'; // modifică dacă `index.tsx` e în alt folder
+import type { RootStackParamList } from './index';
 
 export default function QRScanner() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [facing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [status, setStatus] = useState<'valid' | 'invalid' | null>(null);
@@ -115,10 +115,6 @@ export default function QRScanner() {
     }
   };
 
-  const toggleCameraFacing = () => {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
-  };
-
   const resetScan = () => {
     setScannedData(null);
     setStatus(null);
@@ -137,13 +133,7 @@ export default function QRScanner() {
           barcodeTypes: ['qr'],
         }}
         onBarcodeScanned={handleQRCodeScanned}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Schimbă camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      />
 
       {status && (
         <View
@@ -174,22 +164,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   message: { textAlign: 'center', paddingBottom: 10 },
   camera: { flex: 1 },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 40,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  button: {
-    backgroundColor: 'black',
-    padding: 10,
-    borderRadius: 10,
-  },
-  text: {
-    color: 'white',
-    fontSize: 16,
-  },
   logoutButton: {
     position: 'absolute',
     top: 50,

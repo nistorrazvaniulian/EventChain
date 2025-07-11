@@ -25,7 +25,7 @@ const createTicketFlow = async ({ userId, userEmail, eventId }) => {
   const createdAt = new Date();
   const ticketId = new Ticket({ eventId, userId, qrCode, createdAt })._id.toString();
 
-  // 🔒 Formatăm data corect pentru blockchain
+  // Formatăm data corect pentru blockchain
   const eventDateISO = new Date(event.date).toISOString();
 
   // Blockchain
@@ -89,7 +89,7 @@ const createTicketFlow = async ({ userId, userEmail, eventId }) => {
     await sendTicketEmail(userEmail || 'user@email.com', event.title, qrPath, ticketId);
     console.log('📧 Email trimis cu succes către:', userEmail);
 
-    // 🟢 Ștergem codul QR doar dacă emailul s-a trimis cu succes
+    // Ștergem codul QR doar dacă emailul s-a trimis cu succes
     if (fs.existsSync(qrPath)) fs.unlinkSync(qrPath);
   } catch (e) {
     console.warn('❌ Eroare la trimiterea email-ului:', e.message);

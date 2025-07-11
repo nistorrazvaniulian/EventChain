@@ -30,7 +30,7 @@ const ManagerEventCard = ({ event }) => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/events/${_id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('managerToken')}`, // 🔧 FIX AICI
+          Authorization: `Bearer ${localStorage.getItem('managerToken')}`,
         }
       });
 

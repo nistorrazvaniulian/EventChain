@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
       return;
     }
 
-    // ✅ Verificăm dacă am mai procesat acest bilet deja
+    // Verificăm dacă am mai procesat acest bilet deja
     if (localStorage.getItem(`ticket_bought_${eventId}`)) {
       setMessage('Biletul a fost deja generat. Redirecționare...');
       setTimeout(() => navigate('/my-tickets'), 2000);

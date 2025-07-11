@@ -1,4 +1,3 @@
-// src/api/mockEvents.js
 const events = [
   {
     id: 1,

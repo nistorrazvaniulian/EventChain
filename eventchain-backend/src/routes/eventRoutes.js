@@ -11,21 +11,21 @@ const {
 const auth = require('../middleware/verifyManager');
 const upload = require('../middleware/uploadMiddleware');
 
-// ✅ Create cu imagine
+// Create cu imagine
 router.post('/', auth, upload.single('image'), createEvent);
 
-// ✅ Publică
+// Publică
 router.get('/', getAllEvents);
 
-// ✅ Privat pentru manager
+// Privat pentru manager
 router.get('/:eventId/tickets', auth, getEventTickets);
 
-// ✅ Update cu suport pentru imagine nouă
+// Update cu suport pentru imagine nouă
 router.put('/:eventId', auth, upload.single('image'), updateEvent);
 
 router.get('/:eventId', auth, getEventById);
 
-// ✅ Ștergere
+// Ștergere
 router.delete('/:eventId', auth, deleteEvent);
 
 module.exports = router;

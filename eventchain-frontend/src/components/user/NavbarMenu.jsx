@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/Logo.png";
 import categories from '../../api/mockCategories';
 import cities from '../../api/mockCities';
-import LogoutModal from './LogoutModal'; // ✅ Importăm modalul
+import LogoutModal from './LogoutModal';
 
 const NavbarMenu = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('Categorii');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [userName, setUserName] = useState('User'); // ✅ Fallback
+  const [userName, setUserName] = useState('User'); // Fallback
   const navigate = useNavigate();
 
   const handleLogoutConfirm = () => {
@@ -30,7 +30,7 @@ const NavbarMenu = ({ onClose }) => {
         if (!res.ok) throw new Error('Eroare la fetch user');
 
         const data = await res.json();
-        setUserName(data.name); // ✅ presupunem că backend trimite { name: "..." }
+        setUserName(data.name);
       } catch (err) {
         console.error('Eroare la obținerea utilizatorului:', err);
       }

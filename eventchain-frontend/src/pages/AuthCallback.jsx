@@ -17,7 +17,7 @@ const AuthCallback = () => {
       // Așteptăm un pic pentru ca ProtectedRoute să-l vadă
       setTimeout(() => {
         navigate('/');
-      }, 100); // 👈 delay mic dar eficient
+      }, 100); // delay
     } else {
       navigate('/login');
     }

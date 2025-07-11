@@ -33,7 +33,7 @@ const Header = ({ onMenuToggle }) => {
         />
       )}
 
-      {/* ✅ Mobile Header */}
+      {/* Mobile Header */}
       <div className="flex justify-between items-center lg:hidden">
         <button onClick={handleLogoClick}>
           <img src={logo} alt="EventChain Logo" className="h-10 w-auto" />
@@ -50,7 +50,7 @@ const Header = ({ onMenuToggle }) => {
         </div>
       </div>
 
-      {/* ✅ Desktop Header */}
+      {/* Desktop Header */}
       <div className="hidden lg:flex items-center justify-between w-full">
         {/* Logo */}
         <button onClick={handleLogoClick}>

@@ -29,7 +29,7 @@ const ManagerLogin = () => {
         body: JSON.stringify(credentials)
       });
 
-      // ✅ verificăm dacă e HTML (eroare) în loc de JSON
+      // verificăm dacă e HTML (eroare) în loc de JSON
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         throw new Error('Răspuns invalid de la server (nu este JSON)');

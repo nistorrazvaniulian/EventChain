@@ -4,7 +4,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const Ticket = require('../models/Ticket');
 const createTicketFlow = require('../utils/createTicketFlow');
 
-// ✅ Creare sesiune Stripe
+//Creare sesiune Stripe
 const createCheckoutSession = async (req, res) => {
   const { eventId, title, price } = req.body;
   const userId = req.user.id;
@@ -49,7 +49,7 @@ const createCheckoutSession = async (req, res) => {
   }
 };
 
-// ✅ Webhook Stripe – finalizează doar dacă plata e completă
+//Webhook Stripe – finalizează doar dacă plata e completă
 const handleStripeWebhook = async (req, res) => {
   console.log('📩 Webhook Stripe primit');
   const sig = req.headers['stripe-signature'];
