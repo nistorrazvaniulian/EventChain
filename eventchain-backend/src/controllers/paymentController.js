@@ -4,7 +4,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const Ticket = require('../models/Ticket');
 const createTicketFlow = require('../utils/createTicketFlow');
 
-// ✅ Creare sesiune Stripe
+// Creare sesiune Stripe
 const createCheckoutSession = async (req, res) => {
   const { eventId, title, price } = req.body;
   const userId = req.user.id;
