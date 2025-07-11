@@ -82,7 +82,7 @@ const getMyTickets = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('name email'); // adăugă și alte câmpuri dacă vrei
+    const user = await User.findById(req.user.id).select('name email');
 
     if (!user) {
       return res.status(404).json({ error: 'Utilizatorul nu a fost găsit' });
