@@ -21,7 +21,7 @@ const NavbarMenu = ({ onClose }) => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:3000/api/users/me', {
+        const res = await fetch('https://eventchain.onrender.com/api/users/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -30,7 +30,7 @@ const NavbarMenu = ({ onClose }) => {
         if (!res.ok) throw new Error('Eroare la fetch user');
 
         const data = await res.json();
-        setUserName(data.name); // ✅ presupunem că backend trimite { name: "..." }
+        setUserName(data.name);
       } catch (err) {
         console.error('Eroare la obținerea utilizatorului:', err);
       }

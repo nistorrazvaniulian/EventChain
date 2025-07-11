@@ -4,7 +4,7 @@ import partyIllustration from "../../assets/undraw_having-fun_kkeu.svg";
 const Login = () => {
   const handleLogin = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const redirectUri = 'http://localhost:3000/api/users/google/callback';
+    const redirectUri = 'https://eventchain.onrender.com/api/users/google/callback';
 
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent`;
 
